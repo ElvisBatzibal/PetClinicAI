@@ -8,11 +8,8 @@ public class Pet
     public string? Breed { get; set; }
     public DateTime? BirthDate { get; set; }
     public bool IsNeutered { get; set; }
-
-    // FK
     public int OwnerId { get; set; }
-
-    // Navigation
     public Owner? Owner { get; set; }
     public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 }
+
