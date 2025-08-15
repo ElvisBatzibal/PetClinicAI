@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
 import styles from './pages.module.css';
+import { useToast } from '../components/Toast';
 
 type Owner = { ownerId: number; name: string };
 
@@ -14,6 +15,12 @@ export default function PetsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CreatePet>({ name: '', species: '', breed: '', birthDate: '', isNeutered: false, ownerId: 0 });
+  const [errors, setErrors] = useState<{ name?: string; species?: string; ownerId?: string }>({});
+  const [query, setQuery] = useState('');
+  const [speciesFilter, setSpeciesFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const { push } = useToast();
 
   const fetchData = async () => {
     setLoading(true); setError(null);
@@ -37,8 +44,17 @@ export default function PetsPage() {
 
   useEffect(() => { void fetchData(); }, []);
 
+  const validate = () => {
+    const next: typeof errors = {};
+    if (!form.name.trim()) next.name = 'Nombre requerido';
+    if (!form.species.trim()) next.species = 'Especie requerida';
+    if (!form.ownerId) next.ownerId = 'Debe seleccionar un propietario';
+    setErrors(next); return Object.keys(next).length === 0;
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setError(null);
     try {
       const res = await fetch(`${API_BASE_URL}/pets`, {
@@ -51,8 +67,10 @@ export default function PetsPage() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setForm({ name: '', species: '', breed: '', birthDate: '', isNeutered: false, ownerId: 0 });
       await fetchData();
+  push({ type: 'success', title: 'Creado', message: 'Pet creado correctamente' });
     } catch (e: any) {
-      setError(e.message ?? 'Error creating pet');
+  setError(e.message ?? 'Error creating pet');
+  push({ type: 'error', title: 'Error', message: 'No se pudo crear la mascota' });
     }
   };
 
@@ -60,9 +78,15 @@ export default function PetsPage() {
     <div className={styles.section}>
       <h2>Pets</h2>
       <p>Listado de mascotas y su propietario.</p>
+      <div className="form-grid">
+        <input placeholder="Buscar por nombre o raza" value={query} onChange={e => { setQuery(e.target.value); setPage(1); }} />
+        <input placeholder="Filtrar por especie" value={speciesFilter} onChange={e => { setSpeciesFilter(e.target.value); setPage(1); }} />
+      </div>
       <form onSubmit={onSubmit} className={styles.form}>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
+        {errors.name && <small className={styles.error}>{errors.name}</small>}
         <input placeholder="Species" value={form.species} onChange={e => setForm({ ...form, species: e.target.value })} required />
+        {errors.species && <small className={styles.error}>{errors.species}</small>}
         <input placeholder="Breed" value={form.breed} onChange={e => setForm({ ...form, breed: e.target.value })} />
         <input type="date" placeholder="Birth Date" value={form.birthDate} onChange={e => setForm({ ...form, birthDate: e.target.value })} />
         <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -74,18 +98,28 @@ export default function PetsPage() {
             <option key={o.ownerId} value={o.ownerId}>{o.name}</option>
           ))}
         </select>
-        <button type="submit">Add</button>
+        {errors.ownerId && <small className={styles.error}>{errors.ownerId}</small>}
+        <button type="submit" className="btn btn-primary">Add</button>
       </form>
       {loading && <p>Loading...</p>}
   {error && <p className={styles.error}>{error}</p>}
       <ul className="list">
-        {pets.map(p => (
-          <li className="list-item" key={p.petId}>
-            <strong>{p.name}</strong> <small>({p.species}{p.breed ? ` / ${p.breed}` : ''})</small>
-            <br />Owner: {p.owner?.name ?? p.ownerId}
-          </li>
+        {pets
+          .filter(p => !query || p.name.toLowerCase().includes(query.toLowerCase()) || (p.breed || '').toLowerCase().includes(query.toLowerCase()))
+          .filter(p => !speciesFilter || p.species.toLowerCase().includes(speciesFilter.toLowerCase()))
+          .slice((page - 1) * pageSize, page * pageSize)
+          .map(p => (
+            <li className="list-item" key={p.petId}>
+              <strong>{p.name}</strong> <small>({p.species}{p.breed ? ` / ${p.breed}` : ''})</small>
+              <br />Owner: {p.owner?.name ?? p.ownerId}
+            </li>
         ))}
       </ul>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <button className="btn" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Anterior</button>
+        <span style={{ color: 'var(--muted)' }}>Página {page}</span>
+        <button className="btn" onClick={() => setPage(p => (p * pageSize < pets.filter(pp => (!query || pp.name.toLowerCase().includes(query.toLowerCase()) || (pp.breed || '').toLowerCase().includes(query.toLowerCase())) && (!speciesFilter || pp.species.toLowerCase().includes(speciesFilter.toLowerCase()))).length ? p + 1 : p))}>Siguiente</button>
+      </div>
     </div>
   );
 }
