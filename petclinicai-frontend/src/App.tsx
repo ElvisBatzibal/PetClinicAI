@@ -10,16 +10,27 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('owners');
 
   return (
-    <div className="container" style={{ padding: 16 }}>
-      <h1>PetClinicAI</h1>
-      <nav style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <button onClick={() => setTab('owners')} disabled={tab === 'owners'}>Owners</button>
-        <button onClick={() => setTab('pets')} disabled={tab === 'pets'}>Pets</button>
-        <button onClick={() => setTab('appointments')} disabled={tab === 'appointments'}>Appointments</button>
-      </nav>
-      {tab === 'owners' && <OwnersPage />}
-      {tab === 'pets' && <PetsPage />}
-      {tab === 'appointments' && <AppointmentsPage />}
-    </div>
+    <>
+      <header className="app-header">
+        <div className="header-inner">
+          <div className="brand">
+            <span className="brand-title">PetClinicAI</span>
+            <span className="brand-sub">Dashboard</span>
+          </div>
+          <nav className="tabs">
+            <button className={`tab-btn ${tab === 'owners' ? 'active' : ''}`} onClick={() => setTab('owners')}>Owners</button>
+            <button className={`tab-btn ${tab === 'pets' ? 'active' : ''}`} onClick={() => setTab('pets')}>Pets</button>
+            <button className={`tab-btn ${tab === 'appointments' ? 'active' : ''}`} onClick={() => setTab('appointments')}>Appointments</button>
+          </nav>
+        </div>
+      </header>
+      <main className="container">
+        <div className="card">
+          {tab === 'owners' && <OwnersPage />}
+          {tab === 'pets' && <PetsPage />}
+          {tab === 'appointments' && <AppointmentsPage />}
+        </div>
+      </main>
+    </>
   );
 }

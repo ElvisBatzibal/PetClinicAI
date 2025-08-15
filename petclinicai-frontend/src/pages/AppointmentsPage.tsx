@@ -58,6 +58,7 @@ export default function AppointmentsPage() {
   return (
     <div className={styles.section}>
       <h2>Appointments</h2>
+      <p>Próximas citas y creación de nuevas.</p>
       <form onSubmit={onSubmit} className={styles.form}>
         <select value={form.petId} onChange={e => setForm({ ...form, petId: Number(e.target.value) })} required>
           <option value={0} disabled>Select pet</option>
@@ -75,10 +76,12 @@ export default function AppointmentsPage() {
       </form>
       {loading && <p>Loading...</p>}
   {error && <p className={styles.error}>{error}</p>}
-      <ul>
+      <ul className="list">
         {appts.map(a => (
-          <li key={a.appointmentId}>
-            {new Date(a.visitDate).toLocaleString()} — {a.petName} ({a.species}) — {a.ownerName} — {a.phone ?? ''} — {a.status}
+          <li className="list-item" key={a.appointmentId}>
+            <strong>{a.petName}</strong> <small>({a.species})</small> · {a.ownerName} {a.phone ? `· ${a.phone}` : ''}
+            <br />
+            {new Date(a.visitDate).toLocaleString()} · <em>{a.status}</em>
           </li>
         ))}
       </ul>

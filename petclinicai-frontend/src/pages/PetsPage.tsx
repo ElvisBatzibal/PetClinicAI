@@ -59,6 +59,7 @@ export default function PetsPage() {
   return (
     <div className={styles.section}>
       <h2>Pets</h2>
+      <p>Listado de mascotas y su propietario.</p>
       <form onSubmit={onSubmit} className={styles.form}>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Species" value={form.species} onChange={e => setForm({ ...form, species: e.target.value })} required />
@@ -77,9 +78,12 @@ export default function PetsPage() {
       </form>
       {loading && <p>Loading...</p>}
   {error && <p className={styles.error}>{error}</p>}
-      <ul>
+      <ul className="list">
         {pets.map(p => (
-          <li key={p.petId}>{p.name} ({p.species}{p.breed ? ` / ${p.breed}` : ''}) — Owner: {p.owner?.name ?? p.ownerId}</li>
+          <li className="list-item" key={p.petId}>
+            <strong>{p.name}</strong> <small>({p.species}{p.breed ? ` / ${p.breed}` : ''})</small>
+            <br />Owner: {p.owner?.name ?? p.ownerId}
+          </li>
         ))}
       </ul>
     </div>

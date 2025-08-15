@@ -46,6 +46,7 @@ export default function OwnersPage() {
   return (
     <div className={styles.section}>
       <h2>Owners</h2>
+      <p>Administra propietarios y datos de contacto.</p>
       <form onSubmit={onSubmit} className={styles.form}>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
@@ -54,9 +55,9 @@ export default function OwnersPage() {
       </form>
       {loading && <p>Loading...</p>}
   {error && <p className={styles.error}>{error}</p>}
-      <ul>
+      <ul className="list">
         {owners.map(o => (
-          <li key={o.ownerId}>{o.name} — {o.email} — {o.phone}</li>
+          <li className="list-item" key={o.ownerId}><strong>{o.name}</strong><br /><small>{o.email || '—'} · {o.phone || '—'}</small></li>
         ))}
       </ul>
     </div>
