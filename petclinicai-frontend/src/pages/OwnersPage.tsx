@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
+import styles from './pages.module.css';
 
 type Owner = { ownerId: number; name: string; email?: string; phone?: string };
 
@@ -43,16 +44,16 @@ export default function OwnersPage() {
   };
 
   return (
-    <div>
+    <div className={styles.section}>
       <h2>Owners</h2>
-      <form onSubmit={onSubmit} style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <form onSubmit={onSubmit} className={styles.form}>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
         <input placeholder="Phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
         <button type="submit">Add</button>
       </form>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+  {error && <p className={styles.error}>{error}</p>}
       <ul>
         {owners.map(o => (
           <li key={o.ownerId}>{o.name} — {o.email} — {o.phone}</li>

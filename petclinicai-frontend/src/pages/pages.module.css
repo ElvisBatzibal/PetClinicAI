@@ -1,0 +1,3 @@
+.section { margin-bottom: 16px; }
+.form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.error { color: red; }

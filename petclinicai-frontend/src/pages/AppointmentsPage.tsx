@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
+import styles from './pages.module.css';
 
 type Appointment = { appointmentId: number; visitDate: string; status: string; petName: string; species: string; ownerName: string; phone?: string };
 
@@ -55,9 +56,9 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <div>
+    <div className={styles.section}>
       <h2>Appointments</h2>
-      <form onSubmit={onSubmit} style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+      <form onSubmit={onSubmit} className={styles.form}>
         <select value={form.petId} onChange={e => setForm({ ...form, petId: Number(e.target.value) })} required>
           <option value={0} disabled>Select pet</option>
           {pets.map(p => (<option key={p.petId} value={p.petId}>{p.name}</option>))}
@@ -73,7 +74,7 @@ export default function AppointmentsPage() {
         <button type="submit">Add</button>
       </form>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+  {error && <p className={styles.error}>{error}</p>}
       <ul>
         {appts.map(a => (
           <li key={a.appointmentId}>

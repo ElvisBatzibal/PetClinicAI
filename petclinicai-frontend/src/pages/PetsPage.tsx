@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
+import styles from './pages.module.css';
 
 type Owner = { ownerId: number; name: string };
 
@@ -56,9 +57,9 @@ export default function PetsPage() {
   };
 
   return (
-    <div>
+    <div className={styles.section}>
       <h2>Pets</h2>
-      <form onSubmit={onSubmit} style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+      <form onSubmit={onSubmit} className={styles.form}>
         <input placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input placeholder="Species" value={form.species} onChange={e => setForm({ ...form, species: e.target.value })} required />
         <input placeholder="Breed" value={form.breed} onChange={e => setForm({ ...form, breed: e.target.value })} />
@@ -75,7 +76,7 @@ export default function PetsPage() {
         <button type="submit">Add</button>
       </form>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+  {error && <p className={styles.error}>{error}</p>}
       <ul>
         {pets.map(p => (
           <li key={p.petId}>{p.name} ({p.species}{p.breed ? ` / ${p.breed}` : ''}) — Owner: {p.owner?.name ?? p.ownerId}</li>
